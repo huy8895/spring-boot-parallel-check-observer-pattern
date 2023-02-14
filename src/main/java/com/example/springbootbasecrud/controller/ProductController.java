@@ -15,27 +15,6 @@ public class ProductController extends BaseCRUDController<Product, ProductServic
         super(service);
     }
 
-    @Override
-    @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product entity) {
-        log.info("create entity : {}", entity);
-        return super.create(entity);
-    }
-
-    @Override
-    @PutMapping
-    public ResponseEntity<Product> update(@RequestBody Product entity) {
-        log.info("update entity : {}", entity);
-        return super.update(entity);
-    }
-
-    @Override
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        log.info("delete id : {}", id);
-        return super.delete(id);
-    }
-
     @GetMapping("/test")
     public void customizeFunction(){
         log.info("log : {}", "customizeFunction");
