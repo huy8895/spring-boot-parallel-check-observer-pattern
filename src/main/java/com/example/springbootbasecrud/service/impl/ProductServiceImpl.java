@@ -15,4 +15,9 @@ public class ProductServiceImpl extends AbstractBaseCRUDService<Product, Product
     protected ProductServiceImpl(ProductRepository repository) {
         super(repository);
     }
+
+    @Override
+    public void customizeFunction() {
+        log.info("log : {}", "customizeFunction");
+    }
 }
