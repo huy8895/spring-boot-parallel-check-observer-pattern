@@ -15,7 +15,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 @MappedSuperclass
-public class BaseEntity {
+public class BaseCRUDEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -47,7 +47,7 @@ public class BaseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BaseEntity that)) return false;
+        if (!(o instanceof BaseCRUDEntity that)) return false;
         return id.equals(that.id);
     }
 
