@@ -15,6 +15,7 @@
     <description>spring-boot-base-crud</description>
     <properties>
         <java.version>17</java.version>
+        <jhipster-dependencies.version>7.9.3</jhipster-dependencies.version>
     </properties>
     <dependencies>
         <dependency>
@@ -41,6 +42,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>tech.jhipster</groupId>
+            <artifactId>jhipster-framework</artifactId>
+            <version>${jhipster-dependencies.version}</version>
         </dependency>
     </dependencies>
 
