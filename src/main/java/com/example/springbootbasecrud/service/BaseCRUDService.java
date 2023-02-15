@@ -45,7 +45,7 @@ public interface BaseCRUDService<E extends BaseCRUDEntity> {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<E> findOne(Long id);
+    E findOne(Long id);
 
     /**
      * Soft Delete the "id" baseCRUDEntity.

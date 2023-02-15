@@ -1,6 +1,7 @@
 package com.example.springbootbasecrud.service;
 
 import com.example.springbootbasecrud.entity.BaseCRUDEntity;
+import com.example.springbootbasecrud.repository.BaseCRUDRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 @Slf4j
-public abstract class AbstractBaseCRUDService<E extends BaseCRUDEntity, R extends JpaRepository<E, Long>> implements BaseCRUDService<E> {
+public abstract class AbstractBaseCRUDService<E extends BaseCRUDEntity, R extends BaseCRUDRepository<E, Long>> implements BaseCRUDService<E> {
     protected final R repository;
 
     protected AbstractBaseCRUDService(R repository) {
@@ -50,9 +51,10 @@ public abstract class AbstractBaseCRUDService<E extends BaseCRUDEntity, R extend
     }
 
     @Override
-    public Optional<E> findOne(Long id) {
+    public E findOne(Long id) {
         log.info("findOne id : {}", id);
-        return repository.findById(id);
+        return repository.findByIdAndDeletedFlagFalse(id)
+                         .orElseThrow();
     }
 
     @Override

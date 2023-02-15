@@ -17,6 +17,11 @@ public abstract class AbstractBaseCRUDController<E extends BaseCRUDEntity, S ext
         return ResponseEntity.ok(service.save(entity));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<E> getDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findOne(id));
+    }
+
     @PutMapping
     public ResponseEntity<E> update(@RequestBody E entity) {
         return ResponseEntity.ok(service.update(entity));
