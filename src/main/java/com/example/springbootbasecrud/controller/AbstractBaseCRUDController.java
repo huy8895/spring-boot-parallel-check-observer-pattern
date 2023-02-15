@@ -1,30 +1,37 @@
 package com.example.springbootbasecrud.controller;
 
+import com.example.springbootbasecrud.dto.BaseCRUDDTO;
 import com.example.springbootbasecrud.entity.BaseCRUDEntity;
 import com.example.springbootbasecrud.service.BaseCRUDService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-public abstract class AbstractBaseCRUDController<E extends BaseCRUDEntity, S extends BaseCRUDService<E>> {
+public abstract class AbstractBaseCRUDController<
+        E extends BaseCRUDEntity,
+        DTO extends BaseCRUDDTO,
+        S extends BaseCRUDService<E>> {
     protected final S service;
 
     protected AbstractBaseCRUDController(S service) {
         this.service = service;
     }
     @PostMapping
-    public ResponseEntity<E> create(@RequestBody E entity) {
-        return ResponseEntity.ok(service.save(entity));
+    public  ResponseEntity<DTO>  create(@RequestBody DTO requestDTO) {
+//        return ResponseEntity.ok(service.save(entity));
+        return null;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<E> getDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findOne(id));
+    public ResponseEntity<DTO> getDetail(@PathVariable Long id) {
+//        return ResponseEntity.ok(service.findOne(id));
+        return null;
     }
 
     @PutMapping
-    public ResponseEntity<E> update(@RequestBody E entity) {
-        return ResponseEntity.ok(service.update(entity));
+    public ResponseEntity<DTO> update(@RequestBody DTO requestDTO) {
+//        return ResponseEntity.ok(service.update(entity));
+        return null;
     }
 
     @DeleteMapping("/{id}")
