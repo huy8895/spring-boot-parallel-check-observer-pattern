@@ -48,6 +48,14 @@
             <artifactId>jhipster-framework</artifactId>
             <version>${jhipster-dependencies.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>1.6.14</version>
+        </dependency>
+
     </dependencies>
 
     <build>
