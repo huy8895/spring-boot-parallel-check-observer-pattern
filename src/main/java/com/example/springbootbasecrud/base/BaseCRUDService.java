@@ -3,8 +3,6 @@ package com.example.springbootbasecrud.base;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 public interface BaseCRUDService<E extends BaseCRUDEntity> {
     /**
      * Save a baseCRUDEntity.
@@ -14,21 +12,15 @@ public interface BaseCRUDService<E extends BaseCRUDEntity> {
      */
     E save(E baseCRUDEntity);
 
-    /**
-     * Updates a baseCRUDEntity.
-     *
-     * @param baseCRUDEntity the entity to update.
-     * @return the persisted entity.
-     */
-    E update(E baseCRUDEntity);
 
     /**
      * Partially updates a baseCRUDEntity.
+     * update 1 phần. chỉ update với những trường nào khác null.
      *
      * @param baseCRUDEntity the entity to update partially.
      * @return the persisted entity.
      */
-    Optional<E> partialUpdate(E baseCRUDEntity);
+    E partialUpdate(E baseCRUDEntity);
 
     /**
      * Get all the capacities.

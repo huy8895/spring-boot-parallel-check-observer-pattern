@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/products")
-public class ProductControllerAbstract extends AbstractBaseCRUDController<Product, ProductService> {
+public class ProductController extends AbstractBaseCRUDController<Product, ProductService> {
 
-    protected ProductControllerAbstract(ProductService service) {
+    protected ProductController(ProductService service) {
         super(service);
     }
 

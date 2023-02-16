@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/categories")
-public class CategoryControllerAbstract extends AbstractBaseCRUDController<Category, CategoryService> {
+public class CategoryController extends AbstractBaseCRUDController<Category, CategoryService> {
 
-    protected CategoryControllerAbstract(CategoryService service) {
+    protected CategoryController(CategoryService service) {
         super(service);
     }
 

@@ -22,7 +22,7 @@ public abstract class AbstractBaseCRUDController<E extends BaseCRUDEntity, S ext
 
     @PutMapping
     public ResponseEntity<E> update(@RequestBody E entity) {
-        return ResponseEntity.ok(service.update(entity));
+        return ResponseEntity.ok(service.partialUpdate(entity));
     }
 
     @DeleteMapping("/{id}")

@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 @Slf4j
 public abstract class AbstractBaseCRUDService<E extends BaseCRUDEntity, R extends BaseCRUDRepository<E, Long>> implements BaseCRUDService<E> {
     protected final R repository;
@@ -19,26 +17,17 @@ public abstract class AbstractBaseCRUDService<E extends BaseCRUDEntity, R extend
         log.info("save baseCRUDEntity : {}", baseCRUDEntity);
         return repository.save(baseCRUDEntity);
     }
-
     @Override
-    public E update(E baseCRUDEntity) {
-        log.info("update baseCRUDEntity : {}", baseCRUDEntity);
-        return repository.save(baseCRUDEntity);
-    }
-
-    @Override
-    public Optional<E> partialUpdate(E baseCRUDEntity) {
+    public E partialUpdate(E baseCRUDEntity) {
         log.info("baseCRUDEntity : {}", baseCRUDEntity);
         return repository
                 .findById(baseCRUDEntity.getId())
                 .map(existingProduct -> {
-//                    if (product.getName() != null) {
-//                        existingProduct.setName(product.getName());
-//                    }
-
+                    BaseCrudUtils.update(baseCRUDEntity, baseCRUDEntity);
                     return existingProduct;
                 })
-                .map(repository::save);
+                .map(repository::save)
+                .orElseThrow();
     }
 
     @Override
