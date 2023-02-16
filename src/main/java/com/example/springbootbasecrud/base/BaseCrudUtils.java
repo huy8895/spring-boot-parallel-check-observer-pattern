@@ -25,7 +25,6 @@ public final class BaseCrudUtils {
             if (srcValue == null) emptyNames.add(pd.getName());
         }
 
-        String[] result = new String[emptyNames.size()];
         return emptyNames;
     }
 
