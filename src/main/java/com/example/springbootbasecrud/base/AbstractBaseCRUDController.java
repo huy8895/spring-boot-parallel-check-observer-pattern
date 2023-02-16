@@ -1,7 +1,5 @@
-package com.example.springbootbasecrud.controller;
+package com.example.springbootbasecrud.base;
 
-import com.example.springbootbasecrud.entity.BaseCRUDEntity;
-import com.example.springbootbasecrud.service.BaseCRUDService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

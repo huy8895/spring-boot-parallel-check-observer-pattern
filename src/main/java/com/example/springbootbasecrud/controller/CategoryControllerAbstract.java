@@ -1,5 +1,6 @@
 package com.example.springbootbasecrud.controller;
 
+import com.example.springbootbasecrud.base.AbstractBaseCRUDController;
 import com.example.springbootbasecrud.entity.Category;
 import com.example.springbootbasecrud.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;

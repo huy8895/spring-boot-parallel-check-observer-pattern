@@ -1,6 +1,5 @@
-package com.example.springbootbasecrud.repository;
+package com.example.springbootbasecrud.base;
 
-import com.example.springbootbasecrud.entity.BaseCRUDEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;

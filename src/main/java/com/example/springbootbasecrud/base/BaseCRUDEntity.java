@@ -1,4 +1,4 @@
-package com.example.springbootbasecrud.entity;
+package com.example.springbootbasecrud.base;
 
 import jakarta.persistence.*;
 import lombok.Getter;

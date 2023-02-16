@@ -1,10 +1,8 @@
 package com.example.springbootbasecrud.service.impl;
 
+import com.example.springbootbasecrud.base.AbstractBaseCRUDService;
 import com.example.springbootbasecrud.entity.Product;
-import com.example.springbootbasecrud.repository.CategoryRepository;
 import com.example.springbootbasecrud.repository.ProductRepository;
-import com.example.springbootbasecrud.service.AbstractBaseCRUDService;
-import com.example.springbootbasecrud.service.CategoryService;
 import com.example.springbootbasecrud.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,7 @@
 package com.example.springbootbasecrud.entity;
 
 
+import com.example.springbootbasecrud.base.BaseCRUDEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
