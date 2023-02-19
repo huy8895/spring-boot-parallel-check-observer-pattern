@@ -19,16 +19,16 @@ public class BaseCRUDEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    protected Long id;
 
     @Column(name = "created_at", updatable = false)
-    private Date createdAt;
+    protected Date createdAt;
 
     @Column(name = "updated_at")
-    private Date updatedAt;
+    protected Date updatedAt;
 
     @Column(name = "deleted_flag")
-    private boolean deletedFlag;
+    protected boolean deletedFlag;
 
     @PrePersist
     public void onPrePersist() {
