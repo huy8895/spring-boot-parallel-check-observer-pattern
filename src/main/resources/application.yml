@@ -16,5 +16,9 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
-#http://localhost:8080/swagger-ui/index.html
+  #http://localhost:8080/swagger-ui/index.html
