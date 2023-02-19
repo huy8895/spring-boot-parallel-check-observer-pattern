@@ -29,6 +29,15 @@ public class SpringdocConfig {
     }
 
     @Bean
+    public GroupedOpenApi allApi() {
+        String[] packagesToScan = {"com.example.springbootbasecrud.controller"};
+        return GroupedOpenApi.builder()
+                             .group("All")
+                             .packagesToScan(packagesToScan)
+                             .build();
+    }
+
+    @Bean
     public GroupedOpenApi productApi() {
         String[] paths = {"/api/products/**"};
         return GroupedOpenApi.builder()
