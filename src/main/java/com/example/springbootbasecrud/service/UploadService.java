@@ -1,7 +1,13 @@
 package com.example.springbootbasecrud.service;
 
-import com.example.springbootbasecrud.base.BaseCRUDService;
-import com.example.springbootbasecrud.entity.Upload;
+import com.example.springbootbasecrud.dto.UploadDTO;
+import org.springframework.web.multipart.MultipartFile;
 
-public interface UploadService extends BaseCRUDService<Upload> {
+import java.io.IOException;
+
+public interface UploadService {
+    UploadDTO upload(MultipartFile multipartFile) throws IOException;
+
+
+    UploadDTO downloadImage(Long id);
 }

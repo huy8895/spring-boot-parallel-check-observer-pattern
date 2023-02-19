@@ -1,19 +1,36 @@
 package com.example.springbootbasecrud.controller;
 
-import com.example.springbootbasecrud.base.AbstractBaseCRUDController;
-import com.example.springbootbasecrud.entity.Category;
-import com.example.springbootbasecrud.entity.Upload;
-import com.example.springbootbasecrud.service.CategoryService;
+import com.example.springbootbasecrud.dto.UploadDTO;
 import com.example.springbootbasecrud.service.UploadService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/uploads")
-public class UploadController extends AbstractBaseCRUDController<Upload, UploadService> {
-    protected UploadController(UploadService service) {
-        super(service);
+@RequiredArgsConstructor
+public class UploadController {
+    private final UploadService service;
+
+    @PostMapping
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(service.upload(file));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<byte[]> downloadImage(@PathVariable Long id){
+        UploadDTO dto =service.downloadImage(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                             .contentType(MediaType.valueOf(dto.getContentType()))
+                             .body(dto.getData());
+
     }
 }

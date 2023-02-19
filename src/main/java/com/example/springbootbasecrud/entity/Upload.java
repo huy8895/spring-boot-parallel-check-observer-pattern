@@ -1,7 +1,6 @@
 package com.example.springbootbasecrud.entity;
 
 
-import com.example.springbootbasecrud.base.BaseCRUDEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -9,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * A Upload.
@@ -22,22 +22,31 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "upload")
-//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Upload extends BaseCRUDEntity implements Serializable {
+public class Upload implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
+
+    @Column(name = "created_at", updatable = false)
+    protected Date createdAt;
+
+    @Column(name = "deleted_flag")
+    protected boolean deletedFlag;
 
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
 
     @Lob
-    @Column(name = "file")
-    private byte[] file;
+    @Column(name = "data", length = 1000)
+    private byte[] data;
 
-    @Column(name = "file_content_type")
-    private String fileContentType;
+    @Column(name = "content_type")
+    private String contentType;
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -60,7 +69,7 @@ public class Upload extends BaseCRUDEntity implements Serializable {
         return "Upload{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", fileContentType='" + fileContentType + '\'' +
+                ", contentType='" + contentType + '\'' +
                 '}';
     }
 }
