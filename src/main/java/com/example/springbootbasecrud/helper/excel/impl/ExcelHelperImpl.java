@@ -1,8 +1,8 @@
 package com.example.springbootbasecrud.helper.excel.impl;
 
+import com.example.springbootbasecrud.common.ReflectUtils;
 import com.example.springbootbasecrud.helper.excel.CellDTO;
 import com.example.springbootbasecrud.helper.excel.ExcelHelper;
-import com.example.springbootbasecrud.helper.excel.ExcelPOJO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ExcelHelperImpl<E extends ExcelPOJO> implements ExcelHelper<E> {
+public class ExcelHelperImpl<E> implements ExcelHelper<E> {
 
     public static final int COLUMN_INDEX_ID         = 0;
     public static final int COLUMN_INDEX_TITLE      = 1;
@@ -131,33 +131,11 @@ public class ExcelHelperImpl<E extends ExcelPOJO> implements ExcelHelper<E> {
             cellStyleFormatNumber.setDataFormat(format);
         }
 
-        for (CellDTO cellDTO : element.getCells()) {
+        List<CellDTO> cellDTOS = ReflectUtils.getCellDTO(element);
+        for (CellDTO cellDTO : cellDTOS) {
             row.createCell(cellDTO.getIndex())
                     .setCellValue(cellDTO.getValue());
         }
-
-
-//        Cell cell = row.createCell(COLUMN_INDEX_ID);
-//        cell.setCellValue(book.getId());
-//
-//        cell = row.createCell(COLUMN_INDEX_TITLE);
-//        cell.setCellValue(book.getTitle());
-//
-//        cell = row.createCell(COLUMN_INDEX_PRICE);
-//        cell.setCellValue(book.getPrice());
-//        cell.setCellStyle(cellStyleFormatNumber);
-//
-//        cell = row.createCell(COLUMN_INDEX_QUANTITY);
-//        cell.setCellValue(book.getQuantity());
-
-        // Create cell formula
-        // totalMoney = price * quantity
-//        cell = row.createCell(COLUMN_INDEX_TOTAL, CellType.FORMULA);
-//        cell.setCellStyle(cellStyleFormatNumber);
-//        int currentRow = row.getRowNum() + 1;
-//        String columnPrice = CellReference.convertNumToColString(COLUMN_INDEX_PRICE);
-//        String columnQuantity = CellReference.convertNumToColString(COLUMN_INDEX_QUANTITY);
-//        cell.setCellFormula(columnPrice + currentRow + "*" + columnQuantity + currentRow);
     }
 
     // Create CellStyle for header

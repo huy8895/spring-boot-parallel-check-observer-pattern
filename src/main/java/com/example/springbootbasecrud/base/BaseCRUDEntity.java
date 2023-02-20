@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
@@ -13,7 +12,6 @@ import java.util.Date;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Slf4j
 @MappedSuperclass
 public class BaseCRUDEntity {
     @Id
