@@ -1,5 +1,8 @@
 package com.example.springbootbasecrud.base;
 
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,11 @@ public abstract class AbstractBaseCRUDController<E extends BaseCRUDEntity, S ext
     @GetMapping("/{id}")
     public ResponseEntity<E> getDetail(@PathVariable Long id) {
         return ResponseEntity.ok(service.findOne(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<E>> getList(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     @PutMapping
