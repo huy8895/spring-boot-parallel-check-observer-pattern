@@ -7,8 +7,8 @@ import com.example.springbootbasecrud.repository.UploadRepository;
 import com.example.springbootbasecrud.service.UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,15 +26,16 @@ public class UploadServiceImpl  implements UploadService {
         if (contentType == null) throw new RuntimeException("UploadServiceImpl upload invalid contenty");
         Upload upload = Upload.builder()
                               .contentType(contentType)
-                              .name(multipartFile.getOriginalFilename())
+                              .fileName(getFileName(multipartFile))
                               .deletedFlag(false)
                               .data(FileUtils.compress(multipartFile.getBytes()))
                               .createdAt(new Date())
                               .build();
-         repository.save(upload);
+        Upload saveUpload = repository.save(upload);
         return UploadDTO.builder()
                         .id(upload.getId())
                         .contentType(contentType)
+                        .fileName(saveUpload.getFileName())
                         .build();
     }
 
@@ -47,6 +48,13 @@ public class UploadServiceImpl  implements UploadService {
                 .id(upload.getId())
                 .data(data)
                 .contentType(upload.getContentType())
+                .fileName(upload.getFileName())
+                .size(data.length)
                 .build();
+    }
+
+    private String getFileName(MultipartFile multipartFile) {
+        String filenameExtension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
+        return "upload." + filenameExtension;
     }
 }

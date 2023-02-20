@@ -10,8 +10,8 @@ import lombok.*;
 @Builder
 public class UploadDTO  {
     public Long id;
-    public String name;
+    public String fileName;
     public String contentType;
-    public String size;
+    public long size;
     public byte[] data;
 }

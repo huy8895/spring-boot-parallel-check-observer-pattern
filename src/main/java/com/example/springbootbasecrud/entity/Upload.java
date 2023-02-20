@@ -38,8 +38,8 @@ public class Upload implements Serializable {
     protected boolean deletedFlag;
 
     @NotNull
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
 
     @Lob
     @Column(name = "data", length = 1000)
@@ -68,7 +68,7 @@ public class Upload implements Serializable {
     public String toString() {
         return "Upload{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + fileName + '\'' +
                 ", contentType='" + contentType + '\'' +
                 '}';
     }

@@ -4,6 +4,7 @@ import com.example.springbootbasecrud.dto.UploadDTO;
 import com.example.springbootbasecrud.service.UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,15 @@ public class UploadController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<byte[]> downloadImage(@PathVariable Long id){
-        UploadDTO dto =service.downloadImage(id);
+    public ResponseEntity<byte[]> downloadImage(@PathVariable Long id) {
+        UploadDTO dto = service.downloadImage(id);
+
+        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + dto.getFileName());
         return ResponseEntity.status(HttpStatus.OK)
                              .contentType(MediaType.valueOf(dto.getContentType()))
+                             .headers(headers)
                              .body(dto.getData());
 
     }
