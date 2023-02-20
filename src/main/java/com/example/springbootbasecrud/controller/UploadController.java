@@ -19,7 +19,7 @@ import java.io.IOException;
 public class UploadController {
     private final UploadService service;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         return ResponseEntity.status(HttpStatus.OK)
                              .body(service.upload(file));
