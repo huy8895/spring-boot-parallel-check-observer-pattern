@@ -24,7 +24,7 @@ public class ExcelController {
     @GetMapping("/product")
     public ResponseEntity<?> export(){
         Page<Product> productPage = productService.findAll(Pageable.ofSize(10));
-        byte[] writeFile = excelHelper.writeFile(productPage.getContent());
+        byte[] writeFile = excelHelper.writeFile(productPage.getContent(), Product.class);
         return ResponseEntity.ok(writeFile)
                 ;
     }

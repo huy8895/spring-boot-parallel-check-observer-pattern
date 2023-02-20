@@ -1,5 +1,6 @@
 package com.example.springbootbasecrud.helper.excel.impl;
 
+import com.example.springbootbasecrud.base.BaseCRUDEntity;
 import com.example.springbootbasecrud.common.ReflectUtils;
 import com.example.springbootbasecrud.helper.excel.CellDTO;
 import com.example.springbootbasecrud.helper.excel.ExcelHelper;
@@ -18,12 +19,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ExcelHelperImpl<E> implements ExcelHelper<E> {
-
-    public static final int COLUMN_INDEX_ID         = 0;
-    public static final int COLUMN_INDEX_TITLE      = 1;
-    public static final int COLUMN_INDEX_PRICE      = 2;
-    public static final int COLUMN_INDEX_QUANTITY   = 3;
+public class ExcelHelperImpl<E extends BaseCRUDEntity> implements ExcelHelper<E> {
     public static final int COLUMN_INDEX_TOTAL      = 4;
     private static CellStyle cellStyleFormatNumber = null;
     @Override
@@ -32,11 +28,11 @@ public class ExcelHelperImpl<E> implements ExcelHelper<E> {
     }
 
     @Override
-    public byte[] writeFile(List<E> list) {
-        return writeExcel(list, "xls");
+    public byte[] writeFile(List<E> list,Class<E> eClass) {
+        return writeExcel(list, "xls", eClass);
     }
 
-    public byte[] writeExcel(List<E> list, String excelFilePath)  {
+    public byte[] writeExcel(List<E> list, String excelFilePath, Class<E> eClass)  {
         try(Workbook workbook = getWorkbook(excelFilePath);
             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             // Create sheet
@@ -45,7 +41,7 @@ public class ExcelHelperImpl<E> implements ExcelHelper<E> {
             int rowIndex = 0;
 
             // Write header
-            writeHeader(sheet, rowIndex);
+            writeHeader(sheet, rowIndex, eClass);
 
             // Write data
             rowIndex++;
@@ -88,33 +84,17 @@ public class ExcelHelperImpl<E> implements ExcelHelper<E> {
     }
 
     // Write header with format
-    private static void writeHeader(Sheet sheet, int rowIndex) {
+    private void writeHeader(Sheet sheet, int rowIndex, Class<E> eClass) {
         // create CellStyle
         CellStyle cellStyle = createStyleForHeader(sheet);
-
+        List<CellDTO> cellDTOS = ReflectUtils.getCellHeader(eClass);
         // Create row
         Row row = sheet.createRow(rowIndex);
 
-        // Create cells
-        Cell cell = row.createCell(COLUMN_INDEX_ID);
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue("Id");
-
-        cell = row.createCell(COLUMN_INDEX_TITLE);
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue("Title");
-
-        cell = row.createCell(COLUMN_INDEX_PRICE);
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue("Price");
-
-        cell = row.createCell(COLUMN_INDEX_QUANTITY);
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue("Quantity");
-
-        cell = row.createCell(COLUMN_INDEX_TOTAL);
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue("Total money");
+        for (CellDTO cellDTO : cellDTOS) {
+            row.createCell(cellDTO.getIndex())
+               .setCellValue(cellDTO.getFieldName());
+        }
     }
 
     // Write data
