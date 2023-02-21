@@ -6,13 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -23,9 +24,78 @@ public class ExcelHelperImpl implements ExcelHelper{
 
     @Override
     public <E> List<E> readFile(MultipartFile file, Class<E> eClass) {
+        String filenameExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        return this.readFile(file, filenameExtension, eClass);
+    }
+
+    private <E> List<E> readFile(MultipartFile file, String filenameExtension, Class<E> eClass) {
+        try (Workbook workbook = getWorkbook(file.getInputStream(), filenameExtension)) {
+            // Get sheet
+            Sheet sheet = workbook.getSheetAt(0);
+            List<E> eList = new LinkedList<>();
+            // Get all rows
+            for (Row nextRow : sheet) {
+                if (nextRow.getRowNum() == 0) {
+                    // Ignore header
+                    continue;
+                }
+
+                // Get all cells
+                Iterator<Cell> cellIterator = nextRow.cellIterator();
+
+                // Read cells and set value for <E> object
+                //Book book = new Book();
+                while (cellIterator.hasNext()) {
+                    //Read cell
+                    Cell cell = cellIterator.next();
+                    Object cellValue = getCellValue(cell);
+                    if (cellValue == null || cellValue.toString()
+                                                      .isEmpty()) {
+                        continue;
+                    }
+                    // Set value for book object
+                    int columnIndex = cell.getColumnIndex();
+                    // TODO: 21/2/2023 get cell value from column index
+
+                }
+//                eList.add(book);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
+    // Get cell value
+    private static Object getCellValue(Cell cell) {
+        CellType cellType = cell.getCellType();
+        Object cellValue = null;
+        switch (cellType) {
+            case BOOLEAN:
+                cellValue = cell.getBooleanCellValue();
+                break;
+            case FORMULA:
+                Workbook workbook = cell.getSheet().getWorkbook();
+                FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+                cellValue = evaluator.evaluate(cell).getNumberValue();
+                break;
+            case NUMERIC:
+                cellValue = cell.getNumericCellValue();
+                break;
+            case STRING:
+                cellValue = cell.getStringCellValue();
+                break;
+            case _NONE:
+            case BLANK:
+            case ERROR:
+                break;
+            default:
+                break;
+        }
+
+        return cellValue;
+    }
     @Override
     public <E> byte[] writeFile(List<E> list, Class<E> eClass) {
         return writeExcel(list, "xls", eClass);
@@ -78,6 +148,23 @@ public class ExcelHelperImpl implements ExcelHelper{
         }
 
         return workbook;
+    }
+
+    private static Workbook getWorkbook(InputStream inputStream, String excelFilePath) {
+        if (excelFilePath == null) {
+            throw new IllegalArgumentException("The specified file is not Excel file");
+        }
+        try {
+            if (excelFilePath.endsWith("xlsx")) {
+                return new SXSSFWorkbook(new XSSFWorkbook(inputStream));
+            } else if (excelFilePath.endsWith("xls")) {
+                return new HSSFWorkbook(inputStream);
+            } else {
+                throw new IllegalArgumentException("The specified file is not Excel file");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("The specified file is not Excel file");
+        }
     }
 
     // Write header with format
