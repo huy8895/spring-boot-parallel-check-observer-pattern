@@ -21,7 +21,7 @@ import java.util.Date;
 @Accessors(chain = true)
 @AllArgsConstructor
 @Entity
-@Table(name = "upload")
+@Table(name = "uploads")
 public class Upload implements Serializable {
 
     @Serial
@@ -36,6 +36,7 @@ public class Upload implements Serializable {
 
     @Column(name = "deleted_flag")
     protected boolean deletedFlag;
+    // TODO: 2/21/2023 deleteAt
 
     @NotNull
     @Column(name = "file_name", nullable = false)
@@ -44,6 +45,13 @@ public class Upload implements Serializable {
     @Lob
     @Column(name = "data", length = 1000)
     private byte[] data;
+
+    //originalName
+    //fileName = md5(originalName)
+    //extension
+    //contentType
+    //size
+    //data
 
     @Column(name = "content_type")
     private String contentType;
