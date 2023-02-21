@@ -1,14 +1,11 @@
 package com.example.springbootbasecrud.helper.excel.impl;
 
-import com.example.springbootbasecrud.base.BaseCRUDEntity;
-import com.example.springbootbasecrud.common.ReflectUtils;
 import com.example.springbootbasecrud.helper.excel.CellDTO;
 import com.example.springbootbasecrud.helper.excel.ExcelHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -18,23 +15,22 @@ import java.io.OutputStream;
 import java.util.List;
 
 @Slf4j
-@Service
-public class ExcelHelperImpl<E extends BaseCRUDEntity> implements ExcelHelper<E> {
-    public static final int COLUMN_INDEX_TOTAL      = 4;
+public abstract class ExcelHelperImpl<E> implements ExcelHelper<E> {
     private static CellStyle cellStyleFormatNumber = null;
+
     @Override
     public List<E> readFile(MultipartFile file) {
         return null;
     }
 
     @Override
-    public byte[] writeFile(List<E> list,Class<E> eClass) {
+    public byte[] writeFile(List<E> list, Class<E> eClass) {
         return writeExcel(list, "xls", eClass);
     }
 
-    public byte[] writeExcel(List<E> list, String excelFilePath, Class<E> eClass)  {
-        try(Workbook workbook = getWorkbook(excelFilePath);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+    public byte[] writeExcel(List<E> list, String excelFilePath, Class<E> eClass) {
+        try (Workbook workbook = getWorkbook(excelFilePath);
+             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             // Create sheet
             Sheet sheet = workbook.createSheet("sheet_name"); // Create sheet with sheet name
 
@@ -53,11 +49,9 @@ public class ExcelHelperImpl<E extends BaseCRUDEntity> implements ExcelHelper<E>
                 rowIndex++;
             }
 
-            // Write footer
-            writeFooter(sheet, rowIndex);
-
             // Auto resize column witdth
-            int numberOfColumn = sheet.getRow(0).getPhysicalNumberOfCells();
+            int numberOfColumn = sheet.getRow(0)
+                                      .getPhysicalNumberOfCells();
             autosizeColumn(sheet, numberOfColumn);
             workbook.write(bos);
             return bos.toByteArray();
@@ -87,7 +81,7 @@ public class ExcelHelperImpl<E extends BaseCRUDEntity> implements ExcelHelper<E>
     private void writeHeader(Sheet sheet, int rowIndex, Class<E> eClass) {
         // create CellStyle
         CellStyle cellStyle = createStyleForHeader(sheet);
-        List<CellDTO> cellDTOS = ReflectUtils.getCellHeader(eClass);
+        List<CellDTO> cellDTOS = this.getCellHeader(eClass);
         // Create row
         Row row = sheet.createRow(rowIndex);
 
@@ -97,51 +91,47 @@ public class ExcelHelperImpl<E extends BaseCRUDEntity> implements ExcelHelper<E>
         }
     }
 
+
     // Write data
     private void writeBook(E element, Row row) {
         if (cellStyleFormatNumber == null) {
             // Format number
-            short format = (short)BuiltinFormats.getBuiltinFormat("#,##0");
+            short format = (short) BuiltinFormats.getBuiltinFormat("#,##0");
             // DataFormat df = workbook.createDataFormat();
             // short format = df.getFormat("#,##0");
 
             //Create CellStyle
-            Workbook workbook = row.getSheet().getWorkbook();
+            Workbook workbook = row.getSheet()
+                                   .getWorkbook();
             cellStyleFormatNumber = workbook.createCellStyle();
             cellStyleFormatNumber.setDataFormat(format);
         }
 
-        List<CellDTO> cellDTOS = ReflectUtils.getCellDTO(element);
+        List<CellDTO> cellDTOS = getCellDTOS(element);
         for (CellDTO cellDTO : cellDTOS) {
             row.createCell(cellDTO.getIndex())
-                    .setCellValue(cellDTO.getValue());
+               .setCellValue(cellDTO.getValue());
         }
     }
 
     // Create CellStyle for header
     private static CellStyle createStyleForHeader(Sheet sheet) {
         // Create font
-        Font font = sheet.getWorkbook().createFont();
+        Font font = sheet.getWorkbook()
+                         .createFont();
         font.setFontName("Times New Roman");
         font.setBold(true);
         font.setFontHeightInPoints((short) 14); // font size
         font.setColor(IndexedColors.WHITE.getIndex()); // text color
 
         // Create CellStyle
-        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        CellStyle cellStyle = sheet.getWorkbook()
+                                   .createCellStyle();
         cellStyle.setFont(font);
         cellStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         cellStyle.setBorderBottom(BorderStyle.THIN);
         return cellStyle;
-    }
-
-    // Write footer
-    private static void writeFooter(Sheet sheet, int rowIndex) {
-        // Create row
-        Row row = sheet.createRow(rowIndex);
-        Cell cell = row.createCell(COLUMN_INDEX_TOTAL, CellType.FORMULA);
-        cell.setCellFormula("SUM(E2:E6)");
     }
 
     // Auto resize column width

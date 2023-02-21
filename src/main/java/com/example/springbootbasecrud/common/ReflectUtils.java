@@ -1,6 +1,5 @@
 package com.example.springbootbasecrud.common;
 
-import com.example.springbootbasecrud.base.BaseCRUDEntity;
 import com.example.springbootbasecrud.helper.excel.CellDTO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class ReflectUtils {
-    public static <E extends BaseCRUDEntity> List<CellDTO> getCellDTO(E entity) {
+    public static <E> List<CellDTO> generateCellDTO(E entity) {
         Class<?> aClass = entity.getClass();
         Class<?> superclass = aClass.getSuperclass();
 
@@ -20,7 +19,6 @@ public class ReflectUtils {
         if (superclass != null) {
             allField.addAll(List.of(superclass.getDeclaredFields()));
         }
-//        Field[] declaredFields = aClass.getDeclaredFields();
         allField.addAll(List.of(aClass.getDeclaredFields()));
 
         AtomicInteger index = new AtomicInteger(0);
@@ -48,7 +46,7 @@ public class ReflectUtils {
     }
 
 
-    public static <E> List<CellDTO> getCellHeader(Class<E> aClass) {
+    public static <E> List<CellDTO> generateCellHeader(Class<E> aClass) {
         Class<?> superclass = aClass.getSuperclass();
         List<Field> allField = new ArrayList<>();
         if (superclass != null) {
