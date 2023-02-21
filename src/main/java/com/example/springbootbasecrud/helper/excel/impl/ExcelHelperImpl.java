@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -15,20 +16,22 @@ import java.io.OutputStream;
 import java.util.List;
 
 @Slf4j
-public abstract class ExcelHelperImpl<E> implements ExcelHelper<E> {
+@Service
+public class ExcelHelperImpl implements ExcelHelper{
     private static CellStyle cellStyleFormatNumber = null;
 
+
     @Override
-    public List<E> readFile(MultipartFile file) {
+    public <E> List<E> readFile(MultipartFile file, Class<E> eClass) {
         return null;
     }
 
     @Override
-    public byte[] writeFile(List<E> list, Class<E> eClass) {
+    public <E> byte[] writeFile(List<E> list, Class<E> eClass) {
         return writeExcel(list, "xls", eClass);
     }
 
-    public byte[] writeExcel(List<E> list, String excelFilePath, Class<E> eClass) {
+    private <E> byte[] writeExcel(List<E> list, String excelFilePath, Class<E> eClass) {
         try (Workbook workbook = getWorkbook(excelFilePath);
              ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             // Create sheet
@@ -37,7 +40,7 @@ public abstract class ExcelHelperImpl<E> implements ExcelHelper<E> {
             int rowIndex = 0;
 
             // Write header
-            writeHeader(sheet, rowIndex, eClass);
+            this.writeHeader(sheet, rowIndex, eClass);
 
             // Write data
             rowIndex++;
@@ -78,7 +81,7 @@ public abstract class ExcelHelperImpl<E> implements ExcelHelper<E> {
     }
 
     // Write header with format
-    private void writeHeader(Sheet sheet, int rowIndex, Class<E> eClass) {
+    private <E> void writeHeader(Sheet sheet, int rowIndex, Class<E> eClass) {
         // create CellStyle
         CellStyle cellStyle = createStyleForHeader(sheet);
         List<CellDTO> cellDTOS = this.getCellHeader(eClass);
@@ -93,7 +96,7 @@ public abstract class ExcelHelperImpl<E> implements ExcelHelper<E> {
 
 
     // Write data
-    private void writeBook(E element, Row row) {
+    private <E> void writeBook(E element, Row row) {
         if (cellStyleFormatNumber == null) {
             // Format number
             short format = (short) BuiltinFormats.getBuiltinFormat("#,##0");
