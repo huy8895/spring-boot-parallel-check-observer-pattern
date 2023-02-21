@@ -72,4 +72,8 @@ public class ReflectUtils {
 
         return cellDTOS;
     }
+
+    public static <E> List<Field> getAllField(Class<E> aClass) {
+        return List.of(aClass.getFields());
+    }
 }

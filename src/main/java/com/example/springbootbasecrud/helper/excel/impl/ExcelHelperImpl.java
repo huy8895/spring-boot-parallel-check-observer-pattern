@@ -1,5 +1,6 @@
 package com.example.springbootbasecrud.helper.excel.impl;
 
+import com.example.springbootbasecrud.common.ReflectUtils;
 import com.example.springbootbasecrud.helper.excel.CellDTO;
 import com.example.springbootbasecrud.helper.excel.ExcelHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +13,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -29,22 +30,46 @@ public class ExcelHelperImpl implements ExcelHelper{
     }
 
     private <E> List<E> readFile(MultipartFile file, String filenameExtension, Class<E> eClass) {
+        List<E> eList = new LinkedList<>();
         try (Workbook workbook = getWorkbook(file.getInputStream(), filenameExtension)) {
             // Get sheet
             Sheet sheet = workbook.getSheetAt(0);
-            List<E> eList = new LinkedList<>();
             // Get all rows
+            Map<String, Integer> mapHeader = new LinkedHashMap<>();
+            Map<Integer, Field> mapField = new LinkedHashMap<>();
             for (Row nextRow : sheet) {
                 if (nextRow.getRowNum() == 0) {
                     // Ignore header
+                    Iterator<Cell> cellIterator = nextRow.cellIterator();
+                    while (cellIterator.hasNext()) {
+                        //Read cell
+                        Cell cell = cellIterator.next();
+                        Object cellValue = getCellValue(cell);
+                        if (cellValue == null || cellValue.toString()
+                                                          .isEmpty()) {
+                            continue;
+                        }
+
+                        int columnIndex = cell.getColumnIndex();
+                        mapHeader.put(cellValue.toString().toLowerCase(), columnIndex);
+                    }
                     continue;
                 }
+
+                ReflectUtils.getAllField(eClass).forEach(field -> {
+                    Integer integer = mapHeader.get(field.getName()
+                                                         .toLowerCase());
+                    if (integer != null){
+                        mapField.put(integer, field);
+                    }
+                });
 
                 // Get all cells
                 Iterator<Cell> cellIterator = nextRow.cellIterator();
 
                 // Read cells and set value for <E> object
-                //Book book = new Book();
+
+                E newInstance = getNewInstance(eClass);
                 while (cellIterator.hasNext()) {
                     //Read cell
                     Cell cell = cellIterator.next();
@@ -53,18 +78,45 @@ public class ExcelHelperImpl implements ExcelHelper{
                                                       .isEmpty()) {
                         continue;
                     }
-                    // Set value for book object
-                    int columnIndex = cell.getColumnIndex();
-                    // TODO: 21/2/2023 get cell value from column index
-
+                    setValueToNewInstance(eClass, mapField, newInstance, cell, cellValue.toString());
                 }
-//                eList.add(book);
+                eList.add(newInstance);
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return eList;
+    }
+
+    private <E> void setValueToNewInstance(Class<E> eClass, Map<Integer, Field> mapField, E newInstance, Cell cell,
+                               String cellValue) {
+        // Set value for book object
+        int columnIndex = cell.getColumnIndex();
+        Field field = mapField.get(columnIndex);
+        // TODO: 21/2/2023 get cell value from column index
+
+        if (field == null) return;
+        try {
+            for (Method declaredMethod : eClass.getDeclaredMethods()) {
+                boolean isSetter = declaredMethod.getName()
+                                                 .equalsIgnoreCase("set".concat(field.getName()));
+                if (isSetter) {
+                    declaredMethod.invoke(newInstance, cellValue);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <E> E getNewInstance(Class<E> eClass) {
+        try {
+            return eClass.getDeclaredConstructor()
+                         .newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Get cell value
