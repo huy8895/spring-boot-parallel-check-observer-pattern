@@ -14,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,9 +36,17 @@ public class ExcelHelperImpl implements ExcelHelper{
         try (Workbook workbook = getWorkbook(file.getInputStream(), filenameExtension)) {
             // Get sheet
             Sheet sheet = workbook.getSheetAt(0);
-            // Get all rows
-            Map<String, Integer> mapHeader = new LinkedHashMap<>();
             Map<Integer, Field> mapField = new LinkedHashMap<>();
+            Map<String, Method> eClassMethodMap = ReflectUtils.getAllSetterMethod(eClass)
+                                                      .stream()
+                                                      .collect(Collectors.toMap(method -> method.getName()
+                                                                                                .substring(3)
+                                                                                                .toLowerCase(),
+                                                                                m -> m));
+
+            List<Field> eClassFields = ReflectUtils.getAllField(eClass);
+
+            // Get all rows
             for (Row nextRow : sheet) {
                 if (nextRow.getRowNum() == 0) {
                     // Ignore header
@@ -51,18 +61,14 @@ public class ExcelHelperImpl implements ExcelHelper{
                         }
 
                         int columnIndex = cell.getColumnIndex();
-                        mapHeader.put(cellValue.toString().toLowerCase(), columnIndex);
+                        eClassFields.forEach(field -> {
+                            if (field.getName().equalsIgnoreCase(cellValue.toString())){
+                                mapField.put(columnIndex, field);
+                            }
+                        });
                     }
                     continue;
                 }
-
-                ReflectUtils.getAllField(eClass).forEach(field -> {
-                    Integer integer = mapHeader.get(field.getName()
-                                                         .toLowerCase());
-                    if (integer != null){
-                        mapField.put(integer, field);
-                    }
-                });
 
                 // Get all cells
                 Iterator<Cell> cellIterator = nextRow.cellIterator();
@@ -78,7 +84,10 @@ public class ExcelHelperImpl implements ExcelHelper{
                                                       .isEmpty()) {
                         continue;
                     }
-                    setValueToNewInstance(eClass, mapField, newInstance, cell, cellValue.toString());
+                    int columnIndex = cell.getColumnIndex();
+                    Field field = mapField.get(columnIndex);
+                    if (field == null) continue;
+                    this.invokeSetterMethod(eClassMethodMap, field.getName(), cellValue, newInstance);
                 }
                 eList.add(newInstance);
             }
@@ -89,23 +98,13 @@ public class ExcelHelperImpl implements ExcelHelper{
         return eList;
     }
 
-    private <E> void setValueToNewInstance(Class<E> eClass, Map<Integer, Field> mapField, E newInstance, Cell cell,
-                               String cellValue) {
-        // Set value for book object
-        int columnIndex = cell.getColumnIndex();
-        Field field = mapField.get(columnIndex);
-        // TODO: 21/2/2023 get cell value from column index
-
-        if (field == null) return;
+    private <E> void invokeSetterMethod(Map<String, Method> eClassMethodMap, String fieldName, Object cellValue,
+                                        E newInstance) {
+        Method method = eClassMethodMap.get(fieldName.toLowerCase());
+        if (method == null) return;
         try {
-            for (Method declaredMethod : eClass.getDeclaredMethods()) {
-                boolean isSetter = declaredMethod.getName()
-                                                 .equalsIgnoreCase("set".concat(field.getName()));
-                if (isSetter) {
-                    declaredMethod.invoke(newInstance, cellValue);
-                }
-            }
-        } catch (Exception e) {
+            method.invoke(newInstance, cellValue.toString());
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

@@ -4,10 +4,13 @@ import com.example.springbootbasecrud.helper.excel.CellDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ReflectUtils {
@@ -75,5 +78,10 @@ public class ReflectUtils {
 
     public static <E> List<Field> getAllField(Class<E> aClass) {
         return List.of(aClass.getFields());
+    }
+
+    public static <E> List<Method> getAllSetterMethod(Class<E> aClass) {
+        return Arrays.stream(aClass.getDeclaredMethods()).filter(method -> method.getName().startsWith("set")).collect(
+                Collectors.toList());
     }
 }
