@@ -34,24 +34,27 @@ public class Upload implements Serializable {
     @Column(name = "created_at", updatable = false)
     protected Date createdAt;
 
-    @Column(name = "deleted_flag")
-    protected boolean deletedFlag;
-    // TODO: 2/21/2023 deleteAt
+    @Column(name = "delete_at")
+    protected Date deleteAt;
 
     @NotNull
     @Column(name = "file_name", nullable = false)
-    private String fileName;
+    private String fileName;    //md5(originalName)
+
+    @NotNull
+    @Column(name = "original_name", nullable = false)
+    private String originalName;
+
+    @NotNull
+    @Column(name = "extension", nullable = false)
+    private String extension;
 
     @Lob
     @Column(name = "data", length = 1000)
     private byte[] data;
 
-    //originalName
-    //fileName = md5(originalName)
-    //extension
-    //contentType
-    //size
-    //data
+    @Column(name = "size")
+    private int size;
 
     @Column(name = "content_type")
     private String contentType;

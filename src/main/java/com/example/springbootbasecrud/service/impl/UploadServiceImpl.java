@@ -27,7 +27,7 @@ public class UploadServiceImpl  implements UploadService {
         Upload upload = Upload.builder()
                               .contentType(contentType)
                               .fileName(getFileName(multipartFile))
-                              .deletedFlag(false)
+                              .deleteAt(null)
                               .data(FileUtils.compress(multipartFile.getBytes()))
                               .createdAt(new Date())
                               .build();
