@@ -30,13 +30,18 @@ public class UploadController {
     public ResponseEntity<byte[]> downloadImage(@PathVariable Long id) {
         UploadDTO dto = service.downloadImage(id);
 
-        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"));
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + dto.getFileName());
+        HttpHeaders headers = getHttpHeaders(dto);
         return ResponseEntity.status(HttpStatus.OK)
                              .contentType(MediaType.valueOf(dto.getContentType()))
                              .headers(headers)
                              .body(dto.getData());
 
+    }
+
+    private HttpHeaders getHttpHeaders(UploadDTO dto) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + dto.getFileName());
+        return headers;
     }
 }
