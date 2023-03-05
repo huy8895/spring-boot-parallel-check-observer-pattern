@@ -20,5 +20,17 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
-
   #http://localhost:8080/swagger-ui/index.html
+
+  mail:
+    host: smtp.googlemail.com
+    port: 587
+    username: thongbao.truyenmeme@gmail.com
+    password: qijsscfvbqrcrmrb
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
